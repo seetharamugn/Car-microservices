@@ -2,12 +2,12 @@ package Routes
 
 import (
 	"fmt"
+	"github.com/seetharamugn/car-microservices/Controllers"
 	"net/http"
 )
 
 func SetupRotes() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	http.HandleFunc("/CreateNewCar", Controllers.CreateNewCar)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
