@@ -8,3 +8,7 @@ import (
 func CreateNewCar(car Models.Car) (interface{}, error) {
 	return Repositories.CreateNewCar(car)
 }
+
+func GetCarList() (interface{}, error) {
+	return Repositories.GetCarList()
+}

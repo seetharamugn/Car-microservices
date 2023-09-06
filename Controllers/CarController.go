@@ -19,9 +19,34 @@ func CreateNewCar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	resp, err := Services.CreateNewCar(newCar)
 	fmt.Println(resp)
-	json.NewEncoder(w).Encode(newCar)
+	carJSON, err := json.Marshal(resp)
+	if err != nil {
+		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(carJSON)
+}
 
+func GetCarList(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	resp, err := Services.GetCarList()
+	if err != nil {
+
+	}
+	carListJSON, err := json.Marshal(resp)
+	if err != nil {
+		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(carListJSON)
 }
