@@ -1,6 +1,7 @@
 package Repositories
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/seetharamugn/car-microservices/Initializers"
 	"github.com/seetharamugn/car-microservices/Models"
@@ -11,11 +12,12 @@ import (
 var db = Initializers.ConnectDb()
 
 func CreateNewCar(car Models.Car) (interface{}, error) {
+	car.Id = GenerateRandomString(8)
 	query := `
-        INSERT INTO cars ( make, model, package, color, year, category, mileage, price)
-        VALUES (?,?,?,?,?,?,?,?)
+        INSERT INTO cars ( id,make, model, package, color, year, category, mileage, price)
+        VALUES (?,?,?,?,?,?,?,?,?)
     `
-	_, err := db.Exec(query, car.Make, car.Model, car.Package, car.Color, car.Year, car.Category, car.Mileage, car.Price)
+	_, err := db.Exec(query, car.Id, car.Make, car.Model, car.Package, car.Color, car.Year, car.Category, car.Mileage, car.Price)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -72,4 +74,46 @@ func GetCarList() (interface{}, error) {
 	}
 
 	return cars, nil
+}
+
+func GetCar(carId string) (interface{}, error) {
+	query := `SELECT * FROM cars WHERE id = ?`
+	row := db.QueryRow(query, carId)
+
+	var car Models.Car
+	err := row.Scan(&car.Id, &car.Make, &car.Model, &car.Package, &car.Color, &car.Year, &car.Category, &car.Mileage, &car.Price)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// Return a custom error if the car is not found.
+			return nil, fmt.Errorf("Car not found")
+		}
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	return &car, nil
+}
+
+func UpdateCar(carId string, updatedCar Models.Car) (interface{}, error) {
+	query := `SELECT * FROM cars WHERE id = ?`
+	row := db.QueryRow(query, carId)
+
+	var existingCar Models.Car
+	err := row.Scan(&existingCar.Id, &existingCar.Make, &existingCar.Model, &existingCar.Package, &existingCar.Color, &existingCar.Year, &existingCar.Category, &existingCar.Mileage, &existingCar.Price)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("Car not found")
+		}
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	updateQuery := `UPDATE cars SET make=?, model=?, package=?, color=?, year=?, category=?, mileage=?, price=? WHERE id = ?`
+	_, updateErr := db.Exec(updateQuery, updatedCar.Make, updatedCar.Model, updatedCar.Package, updatedCar.Color, updatedCar.Year, updatedCar.Category, updatedCar.Mileage, updatedCar.Price, carId)
+	if updateErr != nil {
+		fmt.Println(updateErr.Error())
+		return nil, updateErr
+	}
+
+	return updatedCar, nil
 }
