@@ -2,12 +2,13 @@ package Controllers
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/seetharamugn/car-microservices/Dao"
 	"github.com/seetharamugn/car-microservices/Models"
 	"github.com/seetharamugn/car-microservices/Services"
 	"net/http"
 )
 
+// CreateNewCar crate new Car Details
 func CreateNewCar(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -19,9 +20,13 @@ func CreateNewCar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	resp, err := Services.CreateNewCar(newCar)
-	fmt.Println(resp)
-	carJSON, err := json.Marshal(resp)
+	resp := Services.CreateNewCar(newCar)
+	response := Dao.Response{
+		StatusCode: http.StatusOK,
+		Message:    "success",
+		Data:       resp,
+	}
+	carJSON, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
@@ -31,16 +36,19 @@ func CreateNewCar(w http.ResponseWriter, r *http.Request) {
 	w.Write(carJSON)
 }
 
+// GetCarList to Get all Car Details
 func GetCarList(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	resp, err := Services.GetCarList()
-	if err != nil {
-
+	resp := Services.GetCarList()
+	response := Dao.Response{
+		StatusCode: http.StatusOK,
+		Message:    "success",
+		Data:       resp,
 	}
-	carListJSON, err := json.Marshal(resp)
+	carListJSON, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
@@ -50,6 +58,7 @@ func GetCarList(w http.ResponseWriter, r *http.Request) {
 	w.Write(carListJSON)
 }
 
+// GetCar is Particular Car using the CarId the car id is unique
 func GetCar(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -57,20 +66,24 @@ func GetCar(w http.ResponseWriter, r *http.Request) {
 	}
 	carId := r.URL.Query().Get("id")
 
-	resp, err := Services.GetCar(carId)
-	if err != nil {
+	resp := Services.GetCar(carId)
 
+	response := Dao.Response{
+		StatusCode: http.StatusOK,
+		Message:    "success",
+		Data:       resp,
 	}
-	carListJSON, err := json.Marshal(resp)
+	carJSON, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(carListJSON)
+	w.Write(carJSON)
 }
 
+// UpdateCar update the particular car details
 func UpdateCar(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -83,16 +96,19 @@ func UpdateCar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	resp, err := Services.UpdateCar(carId, updateCar)
-	if err != nil {
+	resp := Services.UpdateCar(carId, updateCar)
 
+	response := Dao.Response{
+		StatusCode: http.StatusOK,
+		Message:    "success",
+		Data:       resp,
 	}
-	carListJSON, err := json.Marshal(resp)
+	carJSON, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(carListJSON)
+	w.Write(carJSON)
 }

@@ -10,5 +10,4 @@ func SetupRotes() {
 	http.HandleFunc("/GetCarList", Controllers.GetCarList)
 	http.HandleFunc("/GetCar", Controllers.GetCar)
 	http.HandleFunc("/UpdateCar", Controllers.UpdateCar)
-
 }

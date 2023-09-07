@@ -1,5 +1,6 @@
 package Models
 
+// Car struct is the Model or Entities of Car
 type Car struct {
 	Id       string `json:"Id"`
 	Make     string `json:"Make"`
