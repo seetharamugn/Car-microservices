@@ -5,19 +5,20 @@ import (
 	"github.com/seetharamugn/car-microservices/Dao"
 	"github.com/seetharamugn/car-microservices/Models"
 	"github.com/seetharamugn/car-microservices/Services"
+	"log"
 	"net/http"
 )
 
 // CreateNewCar crate new Car Details
 func CreateNewCar(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		log.Fatalf("Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 	var newCar Models.Car
 	err := json.NewDecoder(r.Body).Decode(&newCar)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Fatalf(err.Error(), http.StatusBadRequest)
 		return
 	}
 	resp := Services.CreateNewCar(newCar)
@@ -28,18 +29,19 @@ func CreateNewCar(w http.ResponseWriter, r *http.Request) {
 	}
 	carJSON, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
+		log.Fatalf("Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(carJSON)
+	log.Println("Nea Car Details created successfully", http.StatusOK)
 }
 
 // GetCarList to Get all Car Details
 func GetCarList(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		log.Fatalf("Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 	resp := Services.GetCarList()
@@ -50,18 +52,19 @@ func GetCarList(w http.ResponseWriter, r *http.Request) {
 	}
 	carListJSON, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
+		log.Fatalf("Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(carListJSON)
+	log.Println("Fetch all car details successfully", http.StatusOK)
 }
 
 // GetCar is Particular Car using the CarId the car id is unique
 func GetCar(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		log.Fatalf("Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 	carId := r.URL.Query().Get("id")
@@ -75,25 +78,26 @@ func GetCar(w http.ResponseWriter, r *http.Request) {
 	}
 	carJSON, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
+		log.Fatalf("Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(carJSON)
+	log.Println("Fetch the car details successfully", http.StatusOK)
 }
 
 // UpdateCar update the particular car details
 func UpdateCar(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		log.Fatalf("Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 	carId := r.URL.Query().Get("id")
 	var updateCar Models.Car
 	err := json.NewDecoder(r.Body).Decode(&updateCar)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Fatalf(err.Error(), http.StatusBadRequest)
 		return
 	}
 	resp := Services.UpdateCar(carId, updateCar)
@@ -105,10 +109,11 @@ func UpdateCar(w http.ResponseWriter, r *http.Request) {
 	}
 	carJSON, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, "Failed to marshal car list to JSON", http.StatusInternalServerError)
+		log.Fatalf("Failed to marshal car list to JSON", http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(carJSON)
+	log.Println("updated the car details successfully", http.StatusOK)
 }
